@@ -1,0 +1,52 @@
+{
+	"name": "n8n-nodes-pdfbolt",
+	"version": "0.1.0",
+	"description": "n8n community node to generate PDFs from HTML, URLs, and templates with PDFBolt API",
+	"license": "MIT",
+	"homepage": "https://pdfbolt.com",
+	"author": {
+		"name": "PDFBolt",
+		"email": "support@pdfbolt.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pdfbolt/n8n-nodes-pdfbolt.git"
+	},
+	"keywords": [
+		"n8n-community-node-package",
+		"pdf",
+		"html-to-pdf",
+		"url-to-pdf",
+		"pdfbolt",
+		"pdf-generation",
+		"pdf-conversion"
+	],
+	"main": "dist/nodes/PdfBolt/PdfBolt.node.js",
+	"scripts": {
+		"build": "tsc && cp nodes/PdfBolt/pdfbolt.svg dist/nodes/PdfBolt/ && cp nodes/PdfBolt/PdfBolt.node.json dist/nodes/PdfBolt/",
+		"dev": "tsc --watch",
+		"lint": "eslint nodes credentials --ext .ts",
+		"lint:fix": "eslint nodes credentials --ext .ts --fix",
+		"prepublishOnly": "npm run build"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"credentials": [
+			"dist/credentials/PdfBoltApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/PdfBolt/PdfBolt.node.js"
+		]
+	},
+	"devDependencies": {
+		"@types/node": "^25.3.5",
+		"n8n-workflow": "^1.0.0",
+		"typescript": "^5.3.0"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"node": "n8n-nodes-pdfbolt.pdfBolt",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Utility"],
+	"resources": {
+		"primaryDocumentation": [
+			{
+				"url": "https://pdfbolt.com/docs"
+			}
+		]
+	},
+	"alias": ["pdf", "html to pdf", "convert", "document", "pdfbolt"],
+	"subcategories": {
+		"Utility": ["Other"]
+	}
+}

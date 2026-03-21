@@ -1,0 +1,7 @@
+nodes/
+credentials/
+tsconfig.json
+.gitignore
+.github/
+*.ts
+!dist/**/*.ts
