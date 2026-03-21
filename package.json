@@ -1,12 +1,12 @@
 {
 	"name": "n8n-nodes-pdfbolt",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "n8n community node to generate PDFs from HTML, URLs, and templates with PDFBolt API",
 	"license": "MIT",
 	"homepage": "https://pdfbolt.com",
 	"author": {
 		"name": "PDFBolt",
-		"email": "support@pdfbolt.com"
+		"email": "contact@pdfbolt.com"
 	},
 	"repository": {
 		"type": "git",
