@@ -11,6 +11,32 @@ export function base64Encode(str: string): string {
 	return Buffer.from(str).toString('base64');
 }
 
+function extractApiError(error: unknown): { errorCode?: string; errorMessage?: string } | undefined {
+	const err = error as JsonObject & { context?: { data?: unknown } };
+
+	const data = err.context?.data;
+	if (data) {
+		try {
+			let decoded: string;
+			if (Buffer.isBuffer(data)) {
+				decoded = data.toString('utf-8');
+			} else if (typeof data === 'string') {
+				decoded = data;
+			} else if (typeof data === 'object' && (data as { type?: string }).type === 'Buffer') {
+				// Serialized Buffer format
+				decoded = Buffer.from((data as { data: number[] }).data).toString('utf-8');
+			} else {
+				return undefined;
+			}
+			return JSON.parse(decoded) as { errorCode?: string; errorMessage?: string };
+		} catch {
+			// not JSON
+		}
+	}
+
+	return undefined;
+}
+
 export async function pdfBoltApiRequest(
 	this: IExecuteFunctions,
 	method: IHttpRequestMethods,
@@ -18,7 +44,6 @@ export async function pdfBoltApiRequest(
 	body?: IDataObject,
 	options?: Partial<IHttpRequestOptions>,
 ): Promise<IDataObject | Buffer> {
-	const credentials = await this.getCredentials('pdfBoltApi');
 	const baseUrl = 'https://api.pdfbolt.com';
 
 	const requestOptions: IHttpRequestOptions = {
@@ -26,60 +51,28 @@ export async function pdfBoltApiRequest(
 		url: `${baseUrl}${endpoint}`,
 		json: true,
 		...options,
-		headers: {
-			'API-KEY': credentials.apiKey as string,
-			...(options?.headers as Record<string, string> || {}),
-		},
-		ignoreHttpStatusErrors: true,
-		returnFullResponse: true,
 	};
 
 	if (body && Object.keys(body).length > 0) {
 		requestOptions.body = body;
 	}
 
-	const response = await this.helpers.httpRequest(requestOptions) as {
-		statusCode: number;
-		body: IDataObject | Buffer | string;
-		headers: IDataObject;
-	};
-
-	const statusCode = response.statusCode;
-
-	if (statusCode >= 200 && statusCode < 300) {
-		return response.body as IDataObject | Buffer;
-	}
-
-	// Error – try to extract errorCode/errorMessage from API response
-	let errorBody = response.body;
-	if (typeof errorBody === 'string') {
-		try {
-			errorBody = JSON.parse(errorBody) as IDataObject;
-		} catch {
-			// not JSON
+	try {
+		return await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'pdfBoltApi',
+			requestOptions,
+		) as IDataObject | Buffer;
+	} catch (error) {
+		const apiError = extractApiError(error);
+		if (apiError?.errorCode || apiError?.errorMessage) {
+			throw new NodeApiError(this.getNode(), error as JsonObject, {
+				message: (apiError.errorMessage as string) || 'API error',
+				description: `Error code: ${apiError.errorCode as string || 'UNKNOWN'}`,
+			});
 		}
+		throw new NodeApiError(this.getNode(), error as JsonObject);
 	}
-	if (Buffer.isBuffer(errorBody)) {
-		try {
-			errorBody = JSON.parse(errorBody.toString('utf-8')) as IDataObject;
-		} catch {
-			// not JSON
-		}
-	}
-
-	const apiError = errorBody as IDataObject;
-	if (apiError?.errorCode || apiError?.errorMessage) {
-		throw new NodeApiError(this.getNode(), {} as JsonObject, {
-			message: (apiError.errorMessage as string) || 'API error',
-			description: `Error code: ${apiError.errorCode as string || 'UNKNOWN'}`,
-			httpCode: String(statusCode),
-		});
-	}
-
-	throw new NodeApiError(this.getNode(), {} as JsonObject, {
-		message: `Request failed with status code ${statusCode}`,
-		httpCode: String(statusCode),
-	});
 }
 
 export function buildRequestBody(
