@@ -49,16 +49,16 @@ export class PdfBolt implements INodeType {
 						description: 'Paste your HTML code and get a PDF file',
 					},
 					{
-						name: 'Convert URL to PDF',
-						value: 'convertUrl',
-						action: 'Convert URL to PDF',
-						description: 'Enter a webpage URL and get a PDF of that page',
-					},
-					{
 						name: 'Convert Template to PDF',
 						value: 'convertTemplate',
 						action: 'Convert template to PDF',
 						description: 'Use a PDFBolt template with your JSON data to generate a PDF',
+					},
+					{
+						name: 'Convert URL to PDF',
+						value: 'convertUrl',
+						action: 'Convert URL to PDF',
+						description: 'Enter a webpage URL and get a PDF of that page',
 					},
 					{
 						name: 'Get Usage',

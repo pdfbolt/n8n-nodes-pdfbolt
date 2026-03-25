@@ -12,6 +12,8 @@ export class PdfBoltApi implements ICredentialType {
 
 	documentationUrl = 'https://pdfbolt.com/docs';
 
+	icon = 'file:pdfbolt.svg' as const;
+
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',

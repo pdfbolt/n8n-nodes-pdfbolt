@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-pdfbolt",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "n8n community node to generate PDFs from HTML, URLs, and templates with PDFBolt API",
 	"license": "MIT",
 	"homepage": "https://pdfbolt.com",
@@ -23,7 +23,7 @@
 	],
 	"main": "dist/nodes/PdfBolt/PdfBolt.node.js",
 	"scripts": {
-		"build": "tsc && cp nodes/PdfBolt/pdfbolt.svg dist/nodes/PdfBolt/ && cp nodes/PdfBolt/PdfBolt.node.json dist/nodes/PdfBolt/",
+		"build": "tsc && cp nodes/PdfBolt/pdfbolt.svg dist/nodes/PdfBolt/ && cp nodes/PdfBolt/PdfBolt.node.json dist/nodes/PdfBolt/ && cp credentials/pdfbolt.svg dist/credentials/",
 		"dev": "tsc --watch",
 		"lint": "eslint nodes credentials --ext .ts",
 		"lint:fix": "eslint nodes credentials --ext .ts --fix",
