@@ -10,8 +10,5 @@
 			}
 		]
 	},
-	"alias": ["pdf", "html to pdf", "convert", "document", "pdfbolt"],
-	"subcategories": {
-		"Utility": ["Other"]
-	}
+	"alias": ["pdf", "html to pdf", "url to pdf", "html", "convert", "document", "template", "pdfbolt"]
 }
