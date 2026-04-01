@@ -15,26 +15,30 @@ function extractApiError(error: unknown): { errorCode?: string; errorMessage?: s
 	const err = error as JsonObject & { context?: { data?: unknown } };
 
 	const data = err.context?.data;
-	if (data) {
-		try {
-			let decoded: string;
-			if (Buffer.isBuffer(data)) {
-				decoded = data.toString('utf-8');
-			} else if (typeof data === 'string') {
-				decoded = data;
-			} else if (typeof data === 'object' && (data as { type?: string }).type === 'Buffer') {
-				// Serialized Buffer format
-				decoded = Buffer.from((data as { data: number[] }).data).toString('utf-8');
-			} else {
-				return undefined;
-			}
-			return JSON.parse(decoded) as { errorCode?: string; errorMessage?: string };
-		} catch {
-			// not JSON
+	if (!data) return undefined;
+
+	// Already parsed JSON object (n8n 2.x)
+	if (typeof data === 'object' && !Buffer.isBuffer(data)) {
+		const obj = data as { errorCode?: string; errorMessage?: string; type?: string; data?: number[] };
+		if (obj.errorCode || obj.errorMessage) {
+			return { errorCode: obj.errorCode, errorMessage: obj.errorMessage };
 		}
+		// Serialized Buffer format
+		if (obj.type === 'Buffer' && Array.isArray(obj.data)) {
+			try {
+				return JSON.parse(Buffer.from(obj.data).toString('utf-8')) as { errorCode?: string; errorMessage?: string };
+			} catch { /* not JSON */ }
+		}
+		return undefined;
 	}
 
-	return undefined;
+	// Buffer or string
+	try {
+		const decoded = Buffer.isBuffer(data) ? data.toString('utf-8') : String(data);
+		return JSON.parse(decoded) as { errorCode?: string; errorMessage?: string };
+	} catch {
+		return undefined;
+	}
 }
 
 export async function pdfBoltApiRequest(
