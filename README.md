@@ -50,6 +50,7 @@ You need a PDFBolt API key. Get one at [app.pdfbolt.com](https://app.pdfbolt.com
 
 ## Resources
 
+- [PDFBolt n8n Community Node Guide](https://pdfbolt.com/docs/automation-platform-integrations/n8n-integration-guide/pdfbolt-community-node)
 - [PDFBolt API Documentation](https://pdfbolt.com/docs)
 - [Conversion Parameters](https://pdfbolt.com/docs/parameters)
 - [PDFBolt Dashboard](https://app.pdfbolt.com)
