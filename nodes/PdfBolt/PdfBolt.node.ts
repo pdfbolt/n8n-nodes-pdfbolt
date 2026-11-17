@@ -17,7 +17,7 @@ export class PdfBolt implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'PDFBolt',
 		name: 'pdfBolt',
-		icon: 'file:pdfbolt.svg',
+		icon: { light: 'file:pdfbolt.svg', dark: 'file:pdfbolt.svg' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{{"convertHtml":"HTML to PDF","convertUrl":"URL to PDF","convertTemplate":"Template to PDF","getUsage":"Get Usage"}[$parameter["operation"]]}}',
@@ -79,7 +79,7 @@ export class PdfBolt implements INodeType {
 					{
 						name: 'Direct (PDF in Response)',
 						value: 'direct',
-						description: 'Get the PDF file immediately in the response. The simplest option',
+						description: 'Get the PDF file immediately in the response. The simplest option.',
 					},
 					{
 						name: 'Sync (PDF via URL)',
@@ -89,7 +89,7 @@ export class PdfBolt implements INodeType {
 					{
 						name: 'Async (PDF via Webhook)',
 						value: 'async',
-						description: 'Convert in the background and send the result to your webhook when ready. Best for large volumes',
+						description: 'Convert in the background and send the result to your webhook when ready. Best for large volumes.',
 					},
 				],
 				displayOptions: {
@@ -112,7 +112,7 @@ export class PdfBolt implements INodeType {
 				required: true,
 				default: '',
 				placeholder: 'https://your-app.com/webhook',
-				description: 'Publicly accessible URL to receive the result when conversion completes. <a href="https://pdfbolt.com/docs/api-endpoints/async#webhook" target="_blank">Learn&nbsp;more</a>',
+				description: 'Publicly accessible URL to receive the result when conversion completes. <a href="https://pdfbolt.com/docs/api-endpoints/async#webhook" target="_blank">Learn&nbsp;more</a>.',
 				displayOptions: {
 					show: {
 						operation: ['convertHtml', 'convertUrl', 'convertTemplate'],
@@ -126,7 +126,7 @@ export class PdfBolt implements INodeType {
 				type: 'string',
 				default: '',
 				placeholder: 'https://s3-your-bucket.com?token=abcdef',
-				description: 'Presigned URL for uploading the PDF directly to your own S3 bucket. If not set, PDFs are stored in PDFBolt S3 for 24 hours. <a href="https://pdfbolt.com/docs/s3-bucket-upload" target="_blank">Learn&nbsp;more</a>',
+				description: 'Presigned URL for uploading the PDF directly to your own S3 bucket. If not set, PDFs are stored in PDFBolt S3 for 24 hours. <a href="https://pdfbolt.com/docs/s3-bucket-upload" target="_blank">Learn&nbsp;more</a>.',
 				displayOptions: {
 					show: {
 						operation: ['convertHtml', 'convertUrl', 'convertTemplate'],
@@ -140,7 +140,7 @@ export class PdfBolt implements INodeType {
 				type: 'string',
 				default: '',
 				placeholder: '1,5,15',
-				description: 'Comma-separated retry delays in minutes for failed conversions, in strictly ascending order (e.g. 1,5,15). Max 5 values, integers only, max 1440 per value. Webhook is sent only on final success or failure. <a href="https://pdfbolt.com/docs/api-endpoints/async#retrydelays" target="_blank">Learn&nbsp;more</a>',
+				description: 'Comma-separated retry delays in minutes for failed conversions, in strictly ascending order (e.g. 1,5,15). Max 5 values, integers only, max 1440 per value. Webhook is sent only on final success or failure. <a href="https://pdfbolt.com/docs/api-endpoints/async#retrydelays" target="_blank">Learn&nbsp;more</a>.',
 				displayOptions: {
 					show: {
 						operation: ['convertHtml', 'convertUrl', 'convertTemplate'],
@@ -181,12 +181,13 @@ export class PdfBolt implements INodeType {
 						endpointType: ['async'],
 					},
 				},
-				description: 'Custom headers (max 10) included in the webhook callback. Useful for adding context or tracking requests. <a href="https://pdfbolt.com/docs/api-endpoints/async#additionalwebhookheaders" target="_blank">Learn&nbsp;more</a>',
+				description: 'Custom headers (max 10) included in the webhook callback. Useful for adding context or tracking requests. <a href="https://pdfbolt.com/docs/api-endpoints/async#additionalwebhookheaders" target="_blank">Learn&nbsp;more</a>.',
 			},
 
 			// Additional Options
 			sharedOptions,
 		],
+		usableAsTool: true,
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {

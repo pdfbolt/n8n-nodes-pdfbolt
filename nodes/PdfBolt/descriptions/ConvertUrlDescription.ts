@@ -8,7 +8,7 @@ export const convertUrlFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		placeholder: 'https://example.com',
-		description: 'URL of the webpage to convert to PDF. Must be a publicly accessible URL. <a href="https://pdfbolt.com/docs/parameters#url" target="_blank">Learn&nbsp;more</a>',
+		description: 'URL of the webpage to convert to PDF. Must be a publicly accessible URL. <a href="https://pdfbolt.com/docs/parameters#source-parameters" target="_blank">Learn&nbsp;more</a>.',
 		displayOptions: {
 			show: {
 				operation: ['convertUrl'],
