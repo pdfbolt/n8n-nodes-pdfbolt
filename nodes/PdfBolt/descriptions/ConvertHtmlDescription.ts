@@ -9,7 +9,7 @@ export const convertHtmlFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		placeholder: '<html><body><h1>Hello World</h1></body></html>',
-		description: 'HTML content to convert to PDF. Paste raw HTML – it will be base64-encoded automatically. <a href="https://pdfbolt.com/docs/parameters#html" target="_blank">Learn&nbsp;more</a>',
+		description: 'HTML content to convert to PDF. Paste raw HTML – it will be base64-encoded automatically. <a href="https://pdfbolt.com/docs/parameters#html" target="_blank">Learn&nbsp;more</a>.',
 		displayOptions: {
 			show: {
 				operation: ['convertHtml'],
