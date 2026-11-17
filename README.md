@@ -32,6 +32,12 @@ Each conversion operation supports three endpoints:
 | **Sync (PDF via URL)** | Get a download URL for the PDF (valid 24h) with conversion details. |
 | **Async (PDF via Webhook)** | Convert in the background and send the result to your webhook when ready. Best for large volumes. |
 
+### Use as an AI Agent Tool
+
+The node can be added as a tool to the n8n **AI Agent** node (it appears as **PDFBolt Tool**), so an agent can generate PDFs and check usage on its own.
+
+For agent workflows, choose the **Sync (PDF via URL)** endpoint: the agent receives a download URL it can share. n8n does not pass binary files to agents, so **Direct** may not work as expected.
+
 ### Additional Options
 
 Fine-tune your PDF output with 30+ parameters:
