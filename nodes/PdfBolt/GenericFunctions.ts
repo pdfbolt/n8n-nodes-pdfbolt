@@ -7,8 +7,32 @@ import type {
 } from 'n8n-workflow';
 import { NodeApiError, NodeOperationError } from 'n8n-workflow';
 
+import { version as packageVersion } from '../../package.json';
+
+export const USER_AGENT = `n8n-nodes-pdfbolt/${packageVersion}`;
+
 export function base64Encode(str: string): string {
 	return Buffer.from(str).toString('base64');
+}
+
+function decodeBinaryErrorBody(data: unknown): IDataObject | undefined {
+	let bytes: Buffer | undefined;
+	if (Buffer.isBuffer(data)) {
+		bytes = data;
+	} else if (
+		data && typeof data === 'object' &&
+		(data as { type?: string }).type === 'Buffer' &&
+		Array.isArray((data as { data?: unknown }).data)
+	) {
+		bytes = Buffer.from((data as { data: number[] }).data);
+	}
+	if (!bytes) return undefined;
+	try {
+		const parsed: unknown = JSON.parse(bytes.toString('utf-8'));
+		return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as IDataObject) : undefined;
+	} catch {
+		return undefined;
+	}
 }
 
 function extractApiError(error: unknown): { errorCode?: string; errorMessage?: string } | undefined {
@@ -55,6 +79,10 @@ export async function pdfBoltApiRequest(
 		url: `${baseUrl}${endpoint}`,
 		json: true,
 		...options,
+		headers: {
+			...options?.headers,
+			'User-Agent': USER_AGENT,
+		},
 	};
 
 	if (body && Object.keys(body).length > 0) {
@@ -70,10 +98,17 @@ export async function pdfBoltApiRequest(
 	} catch (error) {
 		const apiError = extractApiError(error);
 		if (apiError?.errorCode || apiError?.errorMessage) {
-			throw new NodeApiError(this.getNode(), error as JsonObject, {
-				message: (apiError.errorMessage as string) || 'API error',
-				description: `Error code: ${apiError.errorCode as string || 'UNKNOWN'}`,
-			});
+			const message = apiError.errorMessage || 'API error';
+			const description = `Error code: ${apiError.errorCode || 'UNKNOWN'}`;
+			if (error instanceof NodeApiError) {
+				error.message = message;
+				error.description = description;
+				const decodedBody = decodeBinaryErrorBody(error.context?.data);
+				if (decodedBody) {
+					error.context.data = decodedBody;
+				}
+			}
+			throw new NodeApiError(this.getNode(), error as JsonObject, { message, description });
 		}
 		throw new NodeApiError(this.getNode(), error as JsonObject);
 	}
@@ -149,12 +184,21 @@ export function buildRequestBody(
 			body.additionalWebhookHeaders = headers;
 		}
 
-		const retryDelays = this.getNodeParameter('retryDelays', itemIndex, '') as string;
-		if (retryDelays) {
-			body.retryDelays = retryDelays
-				.split(',')
-				.map((s) => parseInt(s.trim(), 10))
-				.filter((n) => !isNaN(n));
+		const retryDelaysRaw = this.getNodeParameter('retryDelays', itemIndex, '');
+		const retryDelayValues = String(retryDelaysRaw ?? '')
+			.split(',')
+			.map((s) => s.trim())
+			.filter((s) => s !== '');
+		const invalidRetryDelay = retryDelayValues.find((s) => !/^\d+$/.test(s));
+		if (invalidRetryDelay !== undefined) {
+			throw new NodeOperationError(
+				this.getNode(),
+				`Retry Delays must be whole minutes separated by commas, e.g. 1,5,15. Invalid value: "${invalidRetryDelay}"`,
+				{ itemIndex },
+			);
+		}
+		if (retryDelayValues.length > 0) {
+			body.retryDelays = retryDelayValues.map((s) => parseInt(s, 10));
 		}
 	}
 
