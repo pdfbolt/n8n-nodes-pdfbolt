@@ -10,7 +10,7 @@ export class PdfBoltApi implements ICredentialType {
 
 	displayName = 'PDFBolt API';
 
-	documentationUrl = 'https://pdfbolt.com/docs';
+	documentationUrl = 'https://pdfbolt.com/docs/automation-platform-integrations/n8n-integration-guide/pdfbolt-community-node';
 
 	icon = 'file:pdfbolt.svg' as const;
 
@@ -22,7 +22,7 @@ export class PdfBoltApi implements ICredentialType {
 			typeOptions: { password: true },
 			default: '',
 			required: true,
-			description: 'API key from your <a href="https://app.pdfbolt.com/api-keys" target="_blank">PDFBolt dashboard</a>',
+			hint: 'Copy your conversion API key from <a href="https://app.pdfbolt.com/api-keys" target="_blank">API Credentials</a> in your PDFBolt dashboard.',
 		},
 	];
 

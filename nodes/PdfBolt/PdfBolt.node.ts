@@ -98,7 +98,7 @@ export class PdfBolt implements INodeType {
 				'PDF Bolt',
 			],
 			resources: {
-				primaryDocumentation: [{ url: 'https://pdfbolt.com/docs' }],
+				primaryDocumentation: [{ url: 'https://pdfbolt.com/docs/automation-platform-integrations/n8n-integration-guide/pdfbolt-community-node' }],
 			},
 		},
 		defaults: {

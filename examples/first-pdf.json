@@ -1,0 +1,48 @@
+{
+  "name": "Generate a PDF from HTML with PDFBolt",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "36ba6436-0ab0-4556-9382-91c8035084dc",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "convertHtml",
+        "endpointType": "direct",
+        "html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>My first PDF</title></head><body><h1>My first PDF</h1><p>Generated from HTML in n8n with PDFBolt.</p></body></html>"
+      },
+      "id": "ca3b44d4-e363-454b-9992-da78b807aa49",
+      "name": "PDFBolt",
+      "type": "n8n-nodes-pdfbolt.pdfBolt",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "PDFBolt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
