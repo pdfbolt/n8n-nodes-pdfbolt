@@ -1,28 +1,33 @@
 name: Publish to npm
 
 on:
+  # "released" fires when a release is published or a pre-release is promoted to a release,
+  # but not for pre-releases. "published" would also fire for pre-releases and miss promotions.
   release:
-    types: [published]
+    types: [released]
 
 jobs:
   publish:
+    # Extra guard: pre-releases are for testing only and must never reach npm
+    if: ${{ !github.event.release.prerelease }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v6
-      - name: Check tag matches package.json version
-        run: |
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          [ "${GITHUB_REF_NAME#v}" = "$PKG_VERSION" ] || { echo "Tag $GITHUB_REF_NAME does not match package.json version $PKG_VERSION"; exit 1; }
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
+      - name: Check tag matches package.json version
+        run: |
+          node --version
+          npm --version
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          [ "$GITHUB_REF_NAME" = "v$PKG_VERSION" ] || { echo "Tag $GITHUB_REF_NAME does not match package.json version v$PKG_VERSION"; exit 1; }
       # --ignore-scripts skips native builds of dev-only dependencies (isolated-vm from @n8n/node-cli)
       - run: npm ci --ignore-scripts
-      # In GitHub Actions, n8n-node release runs lint and build, then npm publish with provenance
+      # In GitHub Actions, n8n-node release runs lint and build, then npm publish with provenance.
+      # npm authenticates through trusted publishing (OIDC), so no NPM_TOKEN is needed.
       - run: npm run release
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
