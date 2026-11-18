@@ -1,67 +1,76 @@
-# n8n-nodes-pdfbolt
+# PDFBolt node for n8n
 
-This is an [n8n](https://n8n.io/) community node for [PDFBolt](https://pdfbolt.com) – a scalable and privacy-first PDF generation API.
+n8n community node for [PDFBolt](https://pdfbolt.com), an HTML to PDF API. Generate PDFs from HTML, web pages, or reusable templates in your workflows, then email the files, upload them to storage, or let an AI agent share a download link.
 
-Convert HTML content, URLs, and templates to high-quality PDFs directly from your n8n workflows.
+## Install
 
-## Installation
+### n8n Cloud
 
-Follow the [n8n community node installation guide](https://docs.n8n.io/integrations/community-nodes/installation/).
+In the workflow editor, open the nodes panel, search for **PDFBolt**, and install the verified node. If you don't have permission to install nodes, ask your instance owner or admin.
 
-In your n8n instance:
-1. Go to **Settings** > **Community Nodes**
-2. Enter `n8n-nodes-pdfbolt`
-3. Click **Install**
+### Self-hosted n8n
+
+As an instance owner or admin, open **Settings > Community nodes**. Enter `n8n-nodes-pdfbolt` as the package name, acknowledge the risks, and confirm the installation. See the [n8n installation guide](https://docs.n8n.io/integrations/community-nodes/installation-and-management/gui-installation) for details.
+
+## Generate your first PDF
+
+1. If you don't have a PDFBolt account, [sign up](https://app.pdfbolt.com/register). The free plan includes 50 document conversions per month. No credit card is required.
+2. Open [API Credentials](https://app.pdfbolt.com/api-keys) in your PDFBolt dashboard and copy a key from **Conversion API Keys**.
+3. In n8n, create a workflow, open the workflow menu, and select **Import from URL**. Paste the URL below to load an example workflow that converts sample HTML to PDF.
+
+   ```text
+   https://raw.githubusercontent.com/pdfbolt/n8n-nodes-pdfbolt/main/examples/first-pdf.json
+   ```
+
+4. Open the **PDFBolt** node and add a new credential. Paste your conversion API key into the **API Key** field and save.
+5. Run the workflow, then open the **PDFBolt** node. In the output panel, download `document.pdf` from the `data` field.
+
+To generate a PDF with your own content, edit the HTML in the **PDFBolt** node and run the workflow again.
 
 ## Operations
 
 | Operation | Description |
-|-----------|-------------|
-| **Convert HTML to PDF** | Paste your HTML code and get a PDF file |
-| **Convert URL to PDF** | Enter a webpage URL and get a PDF of that page |
-| **Convert Template to PDF** | Use a PDFBolt template with your JSON data to generate a PDF |
-| **Get Usage** | Check your plan, remaining conversions, and expiry date |
+| --- | --- |
+| Convert HTML to PDF | Render HTML and CSS as a PDF. Enter HTML directly or use HTML from a previous node. |
+| Convert URL to PDF | Save a web page as a PDF. |
+| Convert Template to PDF | Generate a PDF from a published PDFBolt template and JSON data. |
+| Get Usage | Check your plan, remaining credits, and when those credits expire. |
 
-### Endpoints
+## Endpoints
 
-Each conversion operation supports three endpoints:
+| Endpoint | What the node returns |
+| --- | --- |
+| Direct (PDF in Response) **(default)** | The PDF file in the `data` binary field. Use this option when the next node needs the file, for example as an email attachment. |
+| Sync (PDF via URL) | JSON with a download link in `documentUrl`, valid for 24 hours. On paid plans, set **Custom S3 Presigned URL** to upload the PDF to your own bucket instead. |
+| Async (PDF via Webhook) | The node immediately returns JSON with a `requestId`. When the conversion finishes, PDFBolt sends the result to your HTTPS webhook as a signed JSON payload. Available on paid plans. |
 
-| Endpoint | Description |
-|----------|-------------|
-| **Direct (PDF in Response)** | Get the PDF file immediately in the response. The simplest option. |
-| **Sync (PDF via URL)** | Get a download URL for the PDF (valid 24h) with conversion details. |
-| **Async (PDF via Webhook)** | Convert in the background and send the result to your webhook when ready. Best for large volumes. |
+See the [PDFBolt API endpoint documentation](https://pdfbolt.com/docs/api-endpoints) for request and response examples.
 
-### Use as an AI Agent Tool
+## PDF options
 
-The node can be added as a tool to the n8n **AI Agent** node (it appears as **PDFBolt Tool**), so an agent can generate PDFs and check usage on its own.
+Use **Additional Options** to customize the PDF for any conversion.
 
-For agent workflows, choose the **Sync (PDF via URL)** endpoint: the agent receives a download URL it can share. n8n does not pass binary files to agents, so **Direct** may not work as expected.
+- **Page layout:** paper format or custom dimensions, orientation, margins, scale, and page ranges
+- **Headers and footers:** HTML templates with page numbers and total page counts
+- **Rendering:** background colors and images, CSS media type (print or screen), JavaScript, wait conditions, and timeout
+- **Output:** filename, compression, content disposition (inline or attachment), and structural tags for screen readers
+- **Viewport:** viewport size, device scale factor, and mobile emulation
+- **Page access:** cookies, extra HTTP headers, and HTTP basic authentication
+- **Print production (Growth plan and above):** PDF/X standards, CMYK color space, ICC profiles, and pure black preservation
 
-### Additional Options
+See the [conversion parameters reference](https://pdfbolt.com/docs/parameters) for details.
 
-Fine-tune your PDF output with 30+ parameters:
+## Use PDFBolt with an AI Agent
 
-- **Page Layout** – format, orientation, dimensions, margins, scale, page ranges
-- **Output** – filename, compression, content disposition
-- **Header & Footer** – custom HTML templates with dynamic page numbers
-- **Rendering** – background graphics, media type, JavaScript, timeout, wait conditions
-- **Viewport & Device** – viewport size, mobile emulation, device scale factor
-- **HTTP** – cookies, custom headers, basic authentication
-- **Print Production** – PDF/X standards, color space (RGB/CMYK), ICC profiles
-
-## Credentials
-
-You need a PDFBolt API key. Get one at [app.pdfbolt.com](https://app.pdfbolt.com/api-keys).
+Connect **PDFBolt Tool** to the **Tool** input on the **AI Agent** node. Select **Sync (PDF via URL)** so the agent can share the download link from `documentUrl` in its reply.
 
 ## Resources
 
-- [PDFBolt n8n Community Node Guide](https://pdfbolt.com/docs/automation-platform-integrations/n8n-integration-guide/pdfbolt-community-node)
-- [PDFBolt API Documentation](https://pdfbolt.com/docs)
-- [Conversion Parameters](https://pdfbolt.com/docs/parameters)
-- [PDFBolt Dashboard](https://app.pdfbolt.com)
-- [n8n Community Nodes Documentation](https://docs.n8n.io/integrations/community-nodes/)
+- [PDFBolt n8n integration guide](https://pdfbolt.com/docs/automation-platform-integrations/n8n-integration-guide/pdfbolt-community-node)
+- [PDFBolt API Credentials](https://app.pdfbolt.com/api-keys)
+- [PDFBolt API documentation](https://pdfbolt.com/docs)
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/pdfbolt/n8n-nodes-pdfbolt/blob/main/LICENSE)
