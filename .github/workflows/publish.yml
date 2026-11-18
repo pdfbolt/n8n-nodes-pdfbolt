@@ -12,12 +12,17 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v6
+      - name: Check tag matches package.json version
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          [ "${GITHUB_REF_NAME#v}" = "$PKG_VERSION" ] || { echo "Tag $GITHUB_REF_NAME does not match package.json version $PKG_VERSION"; exit 1; }
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           registry-url: https://registry.npmjs.org
-      - run: npm ci
-      - run: npm run build
-      - run: npm publish --provenance --access public
+      # --ignore-scripts skips native builds of dev-only dependencies (isolated-vm from @n8n/node-cli)
+      - run: npm ci --ignore-scripts
+      # In GitHub Actions, n8n-node release runs lint and build, then npm publish with provenance
+      - run: npm run release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
